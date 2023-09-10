@@ -8,4 +8,5 @@ public class UserDao {
     private String userName;
     private String password;
     private String userRole;
+    private boolean accountNonLocked;
 }

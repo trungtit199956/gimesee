@@ -1,21 +1,64 @@
 package enigma.global.gimesi.config;
 
-import enigma.global.gimesi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.configurers.userdetails.DaoAuthenticationConfigurer;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-//@EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserService userService;
+    private UserDetailsService userDetailsService;
 
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception{
+        http.csrf()
+                .disable()
+                .authorizeRequests()
+                .antMatchers("/admin/**").hasRole("GMS_ADMIN")
+                .antMatchers("/admin/**").hasRole("DEALER_ADMIN")
+//                .antMatchers("/anonymous*").anonymous().antMatchers("/login*").permitAll()
+//                .antMatchers("/public/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/","/public/login","/business/login","/business/home").permitAll()
+                .anyRequest().authenticated()
+                .and()
+//                .formLogin().loginPage("/login").loginProcessingUrl("/login").defaultSuccessUrl("/", true)
+                .formLogin().loginPage("/public/login").loginProcessingUrl("/public/login")
+//                .defaultSuccessUrl("/success")
+                .successForwardUrl("/success")
+//                .failureUrl("/login.html?error=true")
+//                .failureHandler(authenticationFailureHandler())
+                .and()
+                .formLogin().loginPage("/business/login").loginProcessingUrl("/business/login")
+                .defaultSuccessUrl("/success")
+//                .failureUrl("/login.html?error=true")
+//                .failureHandler(authenticationFailureHandler())
+                .and()
+                .logout() .invalidateHttpSession(true)
+                .clearAuthentication(true) .permitAll()
+//                .logout()
+//                .logoutUrl("/login")
+                .deleteCookies("JSESSIONID");
+//                .logoutSuccessHandler(logoutSuccessHandler());
+//        return http.build();
+    }
 }

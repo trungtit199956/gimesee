@@ -11,6 +11,4 @@ import java.util.Set;
 public interface UserRoleRepo extends CrudRepository<UserRole, Integer> {
 
     UserRole findByRoleName(String userRole);
-
-    Set<UserRole> findAllById(Integer roleId);
 }

@@ -22,10 +22,10 @@ public class UserService {
     @Autowired
     private UserRoleRepo userRoleRepo;
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+//    @Bean
+//    public BCryptPasswordEncoder passwordEncoder(){
+//        return new BCryptPasswordEncoder();
+//    }
 
     public ResponseEntity<HttpStatus> accountRegister(UserDao userDao){
 
@@ -34,8 +34,8 @@ public class UserService {
 
         UserInfor userInfor = new UserInfor();
         userInfor.setUserName(userDao.getUserName());
-        userInfor.setPassword(passwordEncoder().encode(userDao.getPassword()));
-        userInfor.setRoleId(userRole.getRoleId());
+//        userInfor.setPassword(passwordEncoder().encode(userDao.getPassword()));
+//        userInfor.setRoleId(userRole.getRoleId());
         userInfoRepo.save(userInfor);
 
         return new ResponseEntity<>(HttpStatus.OK);
