@@ -17,6 +17,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private CustomAuthenticationProvider customAuthenticationProvider;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -27,38 +30,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
+        auth.authenticationProvider(customAuthenticationProvider);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
-        http.csrf()
-                .disable()
+        http
+//                .csrf()
+//                .disable()
                 .authorizeRequests()
-                .antMatchers("/admin/**").hasRole("GMS_ADMIN")
-                .antMatchers("/admin/**").hasRole("DEALER_ADMIN")
-//                .antMatchers("/anonymous*").anonymous().antMatchers("/login*").permitAll()
-//                .antMatchers("/public/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/","/public/login","/business/login","/business/home").permitAll()
+                .antMatchers("/success").hasAnyRole("GMS_ADMIN", "DEALER_ADMIN")
+                .antMatchers("/","/public/login","/business/login","/business/home").permitAll()
                 .anyRequest().authenticated()
                 .and()
-//                .formLogin().loginPage("/login").loginProcessingUrl("/login").defaultSuccessUrl("/", true)
-                .formLogin().loginPage("/public/login").loginProcessingUrl("/public/login")
-//                .defaultSuccessUrl("/success")
-                .successForwardUrl("/success")
-//                .failureUrl("/login.html?error=true")
+                .formLogin()
+                .loginPage("/login")
+                .defaultSuccessUrl("/success", true)
+                .failureUrl("/login.html?error=true")
 //                .failureHandler(authenticationFailureHandler())
                 .and()
-                .formLogin().loginPage("/business/login").loginProcessingUrl("/business/login")
-                .defaultSuccessUrl("/success")
-//                .failureUrl("/login.html?error=true")
-//                .failureHandler(authenticationFailureHandler())
-                .and()
-                .logout() .invalidateHttpSession(true)
-                .clearAuthentication(true) .permitAll()
-//                .logout()
-//                .logoutUrl("/login")
-                .deleteCookies("JSESSIONID");
+                .logout()
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(false)
+                .clearAuthentication(true).permitAll()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/public/login");
 //                .logoutSuccessHandler(logoutSuccessHandler());
-//        return http.build();
     }
 }

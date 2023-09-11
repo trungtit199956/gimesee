@@ -1,5 +1,6 @@
 package enigma.global.gimesi.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,7 @@ public class WelcomeController {
 
     @GetMapping("/")
     public String publicHome(){
-        return "/public/home";
+        return "public/home";
     }
 
     @GetMapping("/public/login")
@@ -45,9 +46,14 @@ public class WelcomeController {
         return "/business/home";
     }
 
+    @GetMapping("/public/home")
+    public String publicHome1(){
+        return "/public/home";
+    }
+//    @PreAuthorize("hasAnyRole('ROLE_GMS_ADMIN','ROLE_DEALER_ADMIN')")
     @GetMapping("/success")
     public String loginSuccess(){
-        return "success";
+        return "/success";
     }
 
     private String getErrorMessage(HttpServletRequest request, String key) {

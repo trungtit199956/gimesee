@@ -13,14 +13,14 @@
         <p th:text="${session.error}" th:unless="${session == null}">[...]</p>
     </div>
     <div th:if="${param.logout}">You have been logged out.</div>
-    <form th:action="@{/public/login}" method="post" class="mt-3 w-25 text-center">
+    <form th:action="@{/login}" method="post" class="mt-3 w-25 text-center">
         <div class="input-group mb-3">
             <span class="input-group-text">아이디</span>
-            <input type="text" class="form-control" placeholder="아이디를 입력해주세요." aria-label="Username" aria-describedby="basic-addon1">
+            <input type="text" class="form-control" placeholder="아이디를 입력해주세요." aria-label="Username" name="username" aria-describedby="basic-addon1">
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text">비밀번호</span>
-            <input type="password" class="form-control" placeholder="비밀번호를 입력해주세요." aria-label="Username" aria-describedby="basic-addon1">
+            <input type="password" class="form-control" placeholder="비밀번호를 입력해주세요." aria-label="Username" name="password" aria-describedby="basic-addon1">
         </div>
         <button type="submit" class="btn btn-primary w-100">로그인</button>
     </form>
